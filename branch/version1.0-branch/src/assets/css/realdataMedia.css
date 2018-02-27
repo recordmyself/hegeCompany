@@ -1,0 +1,233 @@
+
+/* @media screen and (max-width: 1460px){ */
+  #showLeftSpan{
+    position: relative;
+    width: 70%;
+    /* background: ; */
+  }
+  #showRight{
+    width: 30%;
+    /* background: red; */
+  }
+  #showRight_img{
+    position: relative;
+    width: 310px;
+    height: 410px;
+    margin: 0 auto;
+    /* background: black; */
+  }
+  #showLeftSpan img{
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+  }
+  #showLeftSpan span{
+    position: absolute;
+    z-index: 100;
+    display: inline-block;
+    box-sizing: border-box;
+    width:8.8%;
+    height:3.4%;
+    padding-top: 0.11%;
+    text-align: center;
+    /* background: pink; */
+    color: black;
+    font-size: 12px;
+  }
+  /* 第一部分 */
+  #showLeftSpan span:nth-of-type(1){
+    top: 29.9%;;
+    left: 2.5%;
+    background: greenyellow;
+  }
+  #showLeftSpan span:nth-of-type(2){
+    top: 29.9%;
+    left: 11.9%;
+    background: greenyellow;
+  }
+  #showLeftSpan span:nth-of-type(3){
+    top: 38.3%;
+    left: 2.5%;
+  }
+  #showLeftSpan span:nth-of-type(4){
+    top: 38.3%;
+    left: 11.9%;
+  }
+  #showLeftSpan span:nth-of-type(5){
+    top: 46.4%;
+    left: 2.5%;
+    background: greenyellow;
+  }
+  #showLeftSpan span:nth-of-type(6){
+    top: 46.4%;
+    left: 11.9%;
+  }
+  #showLeftSpan span:nth-of-type(7){
+    top: 54.5%;
+    left: 2.5%;
+  }
+  #showLeftSpan span:nth-of-type(8){
+    top: 54.5%;
+    left: 11.9%;
+  }
+  /* 第二部分 */
+  #showLeftSpan span:nth-of-type(9){
+    top: 27.9%;
+    left: 23.5%;
+  }
+  #showLeftSpan span:nth-of-type(10){
+    top: 27.9%;
+    left: 32.7%;
+  }
+  #showLeftSpan span:nth-of-type(11){
+    top: 36%;
+    left: 32.7%;
+  }
+  #showLeftSpan span:nth-of-type(12){
+    top: 44.1%;
+    left: 32.7%;
+  }
+  #showLeftSpan span:nth-of-type(13){
+    width: 6.3%;
+    height: 3.1%;
+    top: 53%;
+    left: 23.7%;
+  }
+  #showLeftSpan span:nth-of-type(14){
+    width: 6.3%;
+    height: 3.1%;
+    top: 61%;
+    left: 23.7%;
+  }
+  /* 第三部分 */
+  #showLeftSpan span:nth-of-type(15){
+    top: 13.5%;
+    left: 47.5%;
+  }
+  #showLeftSpan span:nth-of-type(16){
+    top: 13.5%;
+    left: 56.8%;
+  }
+  #showLeftSpan span:nth-of-type(17){
+    width: 8.2%;
+    top: 28.7%;
+    left: 54.7%;
+  }
+  #showLeftSpan span:nth-of-type(18){
+    width: 8.2%;
+    top: 36.4%;
+    left: 54.7%;
+  }
+  #showLeftSpan span:nth-of-type(19){
+    width: 8.2%;
+    top: 44.3%;
+    left: 54.7%;
+  }
+  /* 第四部分 */
+  #showLeftSpan span:nth-of-type(20){
+    top: 87.5%;
+    left: 8.55%;
+  }
+  #showLeftSpan span:nth-of-type(21){
+    top: 87.5%;
+    left: 18.1%;
+  }
+  #showLeftSpan span:nth-of-type(22){
+    top: 88.1%;
+    left: 55.54%;
+  }
+  #showLeftSpan span:nth-of-type(23){
+    top: 88.1%;
+    left: 64.81%;
+  }
+  /* 第五部分 */
+
+  #showLeftSpan span:nth-of-type(24){
+    width: 7.6%;
+    top: 37.4%;
+    left: 78.59%;
+  }
+  #showLeftSpan span:nth-of-type(25){
+    width: 7.6%;
+    top: 45.7%;
+    left: 78.59%;
+  }
+  #showLeftSpan span:nth-of-type(26){
+    width: 10.0%;
+    top: 1.3%;
+    left: 7.59%;
+    margin-top: -1px;
+    text-align: left;
+  }
+  #showLeftSpan span:nth-of-type(27){
+    width: 12.0%;
+    top: 1.3%;
+    left: 24.5%;
+    text-align: left;
+    margin-top: -1px;
+  }
+  #showLeftSpan span:nth-of-type(28){
+    width: 9.5%;
+    top: 1.3%;
+    left: 42.5%;
+    text-align: left;
+    margin-top: -1px;
+}
+  #showLeftSpan span:nth-of-type(29){
+    width: 20.0%;
+    top: 1.6%;
+    left: 58.5%;
+    text-align: left;
+
+  }
+  #imgFirst{
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+  }
+  #imgSecond{
+    position: absolute;
+    z-index: 101;
+    width: 100px;
+    height: 60px;
+    top: 83px;
+    left: 83px;
+    transform: rotate(-35deg);
+    transform-origin: 70px 30px;
+  }
+  #showRight span:nth-of-type(1){
+    position: absolute;
+    top: 110px;
+    left: 142px;
+    z-index: 102;
+    color: white;
+  }
+  #showRight span:nth-of-type(2){
+    position: absolute;
+    top: 224px;
+    left: 234px;
+    z-index: 102;
+    color: black;
+  }
+  #showRight span:nth-of-type(3){
+    position: absolute;
+    top: 306px;
+    left: 234px;
+    z-index: 102;
+    color: black;
+  }
+  #imgThird,#imgForth{
+    position: absolute;
+    width: 15px;
+    height:15px;
+    z-index: 101;
+    left: 30px;
+  }
+  #imgThird{
+    top: 237px;
+  }
+  #imgForth{
+    top: 315px;
+  }
