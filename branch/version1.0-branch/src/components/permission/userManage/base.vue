@@ -173,7 +173,7 @@ export default {
               placeholder:'请输入密码',
               inputType: 'password',
               inputPattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/,
-              inputErrorMessage: '必须包含中文和字母的8~16位'
+              inputErrorMessage: '必须包含数字和字母的8~16位'
           }).then(({ value }) => {
               let request = UserProtocal.refreshPassword.request
               request.id = id;
