@@ -1,6 +1,6 @@
 <template>
   <div id="tableShow">
-    <el-table :data="store.tableData" size="small" max-height="500" style="width: 100%;" stripe border  @selection-change="handleSelectionChange" highlight-current-row v-loading="false">
+    <el-table :data="store.tableData" size="small" max-height="500" style="width: 100%;" stripe border :header-row-style="{color: '#808790',background: '#252c36'}" @selection-change="handleSelectionChange" highlight-current-row v-loading="false">
         <el-table-column label = '序号' type="index" width="45" :fixed='true' align="center"></el-table-column>
         <el-table-column prop="revTime" label="日期/时间" :fixed='true' align="center" width="150" :formatter="changeDate"></el-table-column>
         <el-table-column prop="oxO2" label="烟气含氧量" align="center" width="150"></el-table-column>
@@ -56,13 +56,13 @@ export default {
   },
   created(){
     this.$nextTick(()=>{
-      // this.setBorderColor()
+      this.setBorderColor()
     })
   },
   mounted(){
-    // setInterval(()=>{
-    //   this.setBorderColor()
-    // })
+    setInterval(()=>{
+      this.setBorderColor()
+    })
   }
 }
 </script>

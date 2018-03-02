@@ -18,9 +18,6 @@ export function createLine(idName, params)
       xData.push(nowHour + ':' + nowMinute)
     }
   } else {
-    params.store = params.store.sort((a, b) => {
-      return b - a;
-    })
     for (let i = 0; i < 24;i++){
       showData.push(params.store[i].realityRatio)
       showData1.push(params.store[i].theoryRatio)
@@ -31,9 +28,8 @@ export function createLine(idName, params)
       xData.push(nowHour + ':' + nowMinute)
     }
   }
-  yMax = Math.ceil(showData.sort((a, b)=>{
-    return b-a
-  })[0]/100)*100 + 100
+  console.log(params.store,showData)
+  yMax = Math.ceil(Math.max.apply(null,showData)/100)*100 + 100
   // yMax = xData.sort(-1)[0]
   // for (let i = params.store.length - 1; i >0; i--){
   //   console.log(new Date(params.store[i].revTime))

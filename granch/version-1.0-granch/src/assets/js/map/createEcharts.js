@@ -18,10 +18,7 @@ export function createLine(idName, params)
       xData.push(nowHour + ':' + nowMinute)
     }
   } else {
-    // params.store = params.store.sort((a, b) => {
-    //   return b - a;
-    // })
-    for (let i = params.store.length-1; i > params.store.length-24;i--){
+    for (let i = 0; i < 24;i++){
       showData.push(params.store[i].realityRatio)
       showData1.push(params.store[i].theoryRatio)
       let nowHour = new Date(params.store[i].revTime).getHours();
@@ -31,12 +28,28 @@ export function createLine(idName, params)
       xData.push(nowHour + ':' + nowMinute)
     }
   }
-  yMax = Math.ceil(showData.sort((a, b)=>{
-    return b-a
-  })[0]/100)*100 + 100
-  console.log('折线内容',params.store)
-  console.log('展示实际',showData)
-  console.log('展示理论',showData1)
+  console.log(params.store,showData)
+  yMax = Math.ceil(Math.max.apply(null,showData)/100)*100 + 100
+  // yMax = xData.sort(-1)[0]
+  // for (let i = params.store.length - 1; i >0; i--){
+  //   console.log(new Date(params.store[i].revTime))
+  // }
+
+  // (function getXdate() {
+  //   var nowDate = new Date().getMinutes();
+  //   var hourAndMin = ''
+  //   for (let i = -36; i < 1; i++) {
+  //     if (nowDate % 5 != 0) {
+  //       hourAndMin = new Date(new Date().getTime() - (nowDate % 5 - i * 5) * 60 * 1000)
+  //     } else {
+  //       hourAndMin = new Date(new Date().getTime() + i * 5 * 60 * 1000);
+  //     }
+  //     let hour = hourAndMin.getHours() > 9 ? hourAndMin.getHours() : '0' + hourAndMin.getHours();
+  //     let mintues = hourAndMin.getMinutes() > 9 ? hourAndMin.getMinutes() : '0' + hourAndMin.getMinutes();
+  //     xData.push(hour + ':' + mintues);
+  //   }
+  // })();
+
   var option = {
     title: {
       text: params.title,

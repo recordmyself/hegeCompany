@@ -41,6 +41,6 @@ export default {
   margin: 5px 5px 5px 5px;
   padding-top: 8px;
   border-radius: 5px;
-  background: #FFF !important
+  background: linear-gradient(to top,#242b3b 0%,#181f29 100%) !important
 }
 </style>

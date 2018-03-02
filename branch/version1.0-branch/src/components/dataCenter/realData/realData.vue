@@ -68,7 +68,7 @@
           <Pading @tabView='tabView' ref='getTotal'/>
         </div>
       </div>
-      <div style="height: 50px;line-height:50px;color: #FFF;pading: 0 0 0 25px;">折线图数据（当前烟囱实时数据）</div>
+      <div style="height: 50px;line-height:50px;color: #FFF;padding: 0 0 0 25px;">折线图数据（当前烟囱实时数据）</div>
       <div id="lin">
         <onlyLine />
       </div>
@@ -171,11 +171,15 @@ export default {
     },
     // 加载页面的时候获取烟囱的详细信息
     getBoilerDetailOrg(params){
-
+      console.log(params)
+      if(params == null){
+        this.$message.warning('请选择烟囱');
+        return;
+      }
       let _this = this;
       let url = doMain.web + RealTimeDataProtocal.get.rest;
       let data = RealTimeDataProtocal.get.request;
-          data.gasSn = params != null?params.gasSn:0
+          data.gasSn = params.gasSn
       axiosHttpPost(this,url,data,(res)=>{
         if(res.data.status == 'FAIL'){
           this.$message.warning({
@@ -194,7 +198,7 @@ export default {
     // 获取表格信息
       tabView(params){
         if(params == null){
-          params = JSON.parse(sessionStorage.getItem('boiler'))
+          params = JSON.parse(sessionStorage.getItem('boiler'));
         }
         let _this = this;
         let url = doMain.web + RealTimeDataProtocal.list.rest;
@@ -286,13 +290,14 @@ export default {
       }
       this.store.account = 0;
       this.store.account1 = 0;
+      this.globalStore.pages.page = 1
   },
   mounted(){
     let _this = this;
     // 获取搜索信息
     this.getPosition();
     // // 获取烟囱详细信息
-    this.getBoilerDetailOrg(JSON.parse(sessionStorage.getItem('boiler')));
+    this.getBoilerDetailOrg(sessionStorage.getItem('boiler') != null?JSON.parse(sessionStorage.getItem('boiler')):null);
     let timer1 = setInterval(()=>{
 
       if($('body').width() < 1550){
@@ -308,7 +313,7 @@ export default {
       if(this.globalStore.refresh == 5 * 60 * 1000){
           this.globalStore.pages.page = 1;
           this.globalStore.pages.rows = 12;
-          this.getBoilerDetailOrg(JSON.parse(sessionStorage.getItem('boiler')));
+          this.getBoilerDetailOrg(sessionStorage.getItem('boiler') != null?JSON.parse(sessionStorage.getItem('boiler')):null);
           this.globalStore.refresh = 0;
       }
         this.globalStore.refresh++;
@@ -359,6 +364,7 @@ export default {
       this.store.form.boileroom = "",
       this.store.restaurantsS = [];
       this.store.restaurantsC.forEach(item => {
+        console.log(newValue)
         switch (newValue.length) {
           case 0:
             break;
