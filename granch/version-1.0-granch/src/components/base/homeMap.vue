@@ -326,11 +326,11 @@ export default {
     changeBackground(){
       $('.el-input__inner').css({
         background: 'transparent',
-        color:'#FFF'
+        color:'#000'
       })
       $('.el-cascader__label').css({
         background: 'transparent',
-        color:'#FFF'
+        color:'#000'
       })
     },
     // 定时器
@@ -623,7 +623,7 @@ td {
   height: 50px;
   line-height: 50px;
   z-index: 1000;
-  background: rgba(21,31,41,0.5)
+  background: rgba(255,255,255,0.8)
 }
 #search .el-form{
   display: inline-block;
@@ -636,7 +636,7 @@ td {
 #searchText{
   margin-left: 15px;
   font-size: 14px;
-  color: #CCC;
+  color: #aaa;
 }
 </style>
 

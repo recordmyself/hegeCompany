@@ -36,6 +36,11 @@
                     <span>{{scope.row.phone}}</span>
                 </template>
             </el-table-column>
+            <el-table-column label="邮箱" width="200" align="center">
+                <template slot-scope="scope">
+                    <span>{{scope.row.email}}</span>
+                </template>
+            </el-table-column>
             <!-- <el-table-column label="统一信用代码" width="100" align="center">
                 <template slot-scope="scope">
                     <span>{{scope.row.unifiedCode}}</span>
@@ -64,7 +69,8 @@
             </el-table-column>
             <el-table-column label="操作"  width="100" align="center" fixed="right">
                 <template slot-scope="scope">
-                    <div v-if="scope.row.state!='EXPIRE'" class="operate">
+                    <!-- v-if="scope.row.state!='EXPIRE'" -->
+                    <div  class="operate">
                         <el-button 
                         v-for="item in store.buttonListArr" 
                         :key="item.id"

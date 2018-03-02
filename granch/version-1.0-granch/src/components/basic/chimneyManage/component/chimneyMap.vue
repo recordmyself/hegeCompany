@@ -1,26 +1,26 @@
 <template>
   <div class="contentShow">
 
-    <div class="showArea">
+     <div class="showArea">
       <div id="search">
         <el-form ref="form" size= 'small' :inline="true" :model="globalStore.form" label-width="20px">
           <el-form-item label="  " style="color:#FFF">
             <el-select v-model="globalStore.form.province" clearable filterable placeholder="请选择省份">
               <el-option
-                v-for="item in globalStore.restaurantsP"
-                :key="item.id"
-                :label="item.label"
-                :value="item.label">
+                v-for="(item,i) in globalStore.restaurantsP"
+                :key="i"
+                :label="item"
+                :value="item">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="  ">
             <el-select v-model="globalStore.form.area" clearable filterable placeholder="请选择市县">
               <el-option
-                v-for="item in globalStore.restaurantsR"
-                :key="item.id"
-                :label="item.label"
-                :value="item.label">
+                v-for="(item,i) in globalStore.restaurantsR"
+                :key="i"
+                :label="item"
+                :value="item">
               </el-option>
             </el-select>
           </el-form-item>
@@ -46,7 +46,7 @@
             </el-select>
           </el-form-item>
         </el-form>
-        <span v-show="globalStore.showSearch" id="searchText">请选择</span>
+        <span v-show="globalStore.showSearch" id="searchText">选择烟囱，查看烟囱信息</span>
       </div>
       <!-- 地图区域 -->
       <div id="container"></div>
@@ -176,13 +176,12 @@ export default {
       data.area = this.globalStore.form.area || "";
       data.company = this.globalStore.form.company || "";
       data.boiler = this.globalStore.form.boileroom || "";
-      // console.log("条件", data);
       axiosHttpPost(this, url, data, function(res) {
+        console.log('here',res)
         _this.globalStore.cellNum = 0;
         if (res.data.result) {
-          console.log('锅炉房',res.data.result)
           res.data.result.forEach(item => {
-            if (item.stateNum == 1) {
+            if (item.stateNum == 2) {
               _this.globalStore.cellNum++;
             }
           });
@@ -192,15 +191,24 @@ export default {
         });
       });
     },
-    // 获取搜省市区域
-    getPosition(position) {
+    // 获取搜省市
+    getPosition() {
       let _this = this;
-      let url = doMain.web + PositionProtocal.listTree.rest;
-      let data = PositionProtocal.listTree.request;
-      data.id = position || "";
+      let url = doMain.web + PositionProtocal.getCity.rest;
+      let data = PositionProtocal.getCity.request;
       axiosHttpPost(_this, url, data, function(res) {
-        // console.log("搜索内容",res.data.result)
         _this.globalStore.restaurantsP = res.data.result;
+      });
+    },
+    // 获取区域
+    getArea(params){
+      let _this = this;
+      let url = doMain.web + PositionProtocal.getArea.rest;
+      let data = PositionProtocal.getArea.request;
+      data.city = params;
+      data.companyId = this.globalStore.userInfo.companyId;
+      axiosHttpPost(_this, url, data, function(res) {
+        _this.globalStore.restaurantsR = res.data.result;
       });
     },
     // 搜索公司锅炉
@@ -211,7 +219,13 @@ export default {
       data.city = this.globalStore.form.province;
       data.area = this.globalStore.form.area;
       axiosHttpPost(this, url, data, res => {
-        _this.globalStore.restaurantsC = res.data.result;
+        if(res.data.status == "FAIL"){
+          _this.$message.error(res.data.message)
+          _this.globalStore.restaurantsC = [];
+        }else{
+          _this.globalStore.restaurantsC = res.data.result;
+        }
+        
       });
     },
     // 再次获取锅炉房
@@ -220,13 +234,11 @@ export default {
       let url = doMain.web + PositionProtocal.listBoilerHourse.rest;
       let data = PositionProtocal.listBoilerHourse.request;
       data.id = id;
-      // console.log('see here',data)
       axiosHttpPost(this, url, data, res => {
         _this.globalStore.cellNum = 0;
         if (res.data.result) {
-          // console.log('锅炉房',res.data.result)
           res.data.result.forEach(item => {
-            if (item.stateNum == 1) {
+            if (item.stateNum == 2) {
               _this.globalStore.cellNum++;
             }
           });
@@ -243,19 +255,16 @@ export default {
       let url = doMain.web + PositionProtocal.listBoilerState.rest;
       let data = PositionProtocal.listBoilerState.request;
           data.id = id;
-          console.log('291',data)
       axiosHttpPost(this,url,data,(res)=>{
-        console.log('293',res.data.result)
         _this.globalStore.cellNum = 0;
         if (res.data.result) {
           res.data.result.forEach(item => {
-            if (item.stateNum == 1) {
+            if (item.stateNum == 2) {
               _this.globalStore.cellNum++;
             }
           });
         }
         _this.globalStore.boileroomId = res.data.result[0].id;
-        console.log('see here',_this.globalStore.boileroomId)
         CMap.addMaker(_this, {
           alleStand: res.data.result ? res.data.result : []
         });

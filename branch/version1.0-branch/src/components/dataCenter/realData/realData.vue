@@ -193,10 +193,13 @@ export default {
     },
     // 获取表格信息
       tabView(params){
+        if(params == null){
+          params = JSON.parse(sessionStorage.getItem('boiler'))
+        }
         let _this = this;
         let url = doMain.web + RealTimeDataProtocal.list.rest;
         let data = RealTimeDataProtocal.list.request;
-        data.gasSn = params != null?params.gasSn: 0
+        data.gasSn = params.gasSn
         data.page = this.globalStore.pages.page;
         data.rows = this.globalStore.pages.rows;
         axiosHttpPost(this,url,data,function(res){          
@@ -347,7 +350,7 @@ export default {
       this.store.form.companyChild = [],
       this.store.restaurantsC = []
         this.store.restaurantsR.forEach((item)=> {
-          if(item == newValue){            
+          if(item == newValue){
             this.getCompanyAndBoileroom();
           }
         })
@@ -355,7 +358,6 @@ export default {
     companyChild(newValue,oldValue){
       this.store.form.boileroom = "",
       this.store.restaurantsS = [];
-      console.log(newValue)
       this.store.restaurantsC.forEach(item => {
         switch (newValue.length) {
           case 0:

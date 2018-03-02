@@ -55,7 +55,7 @@
            <headTop/>
         </el-header>
         <!-- 这里是内容 -->
-          <el-main style="height:95%;padding: 2px 0 0 2px;background:#0d111a">
+          <el-main style="height:95%;padding: 2px 0 0 2px;background:rgb(245,245,245)">
 
             <!-- <transition name="fade" mode="out-in"> -->
                <router-view />

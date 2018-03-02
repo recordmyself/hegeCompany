@@ -77,6 +77,7 @@ export default {
       data.size = this.globalStore.pages.rows;
       console.log(url,data)
       axiosHttpPost(this,url,data,function(res){
+        console.log(res)
           _this.globalStore.loading = false;
           _this.store.tableData = res.data.result.logList;
           _this.globalStore.pages.totalRows = res.data.result.count;

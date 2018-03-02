@@ -4,8 +4,9 @@ export const store = {
     province: '',
     city: '',
     contacts: '',
-    mobile: '',
-    // code: '',
+    mobile:'',
+    email: '',
+    code: '',
     unifiedCode: '',
     boilers: '',
     vip:'',
@@ -19,6 +20,8 @@ export const store = {
   city: [],
   //发送验证码按钮
   sendTo: true,
+  sendto1: true,
+  sendTo2: true,
   // 验证码
   code: '',
   // 手机号状态

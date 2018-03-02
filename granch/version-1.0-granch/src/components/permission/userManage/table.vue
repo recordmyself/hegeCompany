@@ -76,11 +76,11 @@
                      <!-- | formatStatus -->
                 </template>
           </el-table-column>
-          <!-- <el-table-column prop="memberType" label="会员类型" align="center">
+           <el-table-column prop="isActivation" label="激活状态" align="center">
                 <template slot-scope="scope">
-                    <span>{{scope.row.memberType | formatVip}}</span>
+                    <span>{{scope.row.isActivation | formatVip}}</span>
                 </template>
-          </el-table-column> -->
+          </el-table-column> 
           
           <el-table-column prop="memo" label="备注"  min-width="130" align="center">
                 <template slot-scope="scope">
@@ -123,10 +123,10 @@ export default {
             return formatDate(date, 'yyyy-MM-dd')
         },
         formatVip(state) {
-            if(state == 2) {
-                return '付费'
-            }else if(state == 1){
-                return '免费'
+            if(state) {
+                return '已激活'
+            }else{
+                return '未激活'
             } 
         },
         formatStatus(status) {
@@ -188,6 +188,8 @@ export default {
                     let dayEnd = new Date(row.endTime).getDate()<10? '0' + new Date(row.endTime).getDate(): new Date(row.endTime).getDate()
                     store.form.startDate.time = new Date(parseFloat(row.startTime)).getFullYear()+'-'+ (parseFloat(new Date(row.startTime).getMonth())+1) + '-' + dayStart
                     store.form.endDate.time = new Date(parseFloat(row.endTime)).getFullYear()+'-'+ (parseFloat(new Date(row.endTime).getMonth())+1) + '-' + dayEnd
+                    store.initStartTime = store.form.startDate.time
+                    store.initEndTime = store.form.endDate.time
                     this.store.dialogFormVisible  = true;
                     store.form.roleIdList = res.data.result[0].roleIdList
                 })

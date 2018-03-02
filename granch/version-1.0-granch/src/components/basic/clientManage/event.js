@@ -26,9 +26,7 @@ export function resetTemp() {
         endTime:null,  //有效期
         validTime: [],
         state:null,
-        rProvince:null,//公司注册的省
-        rCity:null,//公司注册的市
-        registerName:null//公司注册的公司名	 
+        email: null //电子邮箱
     }
 }
 

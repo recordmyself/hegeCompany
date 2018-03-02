@@ -44,7 +44,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="  ">
-          <el-select v-model="store.form.boiler" disabled clearable filterable placeholder="请选择烟囱">
+          <el-select v-model="store.form.boiler" clearable filterable placeholder="请选择锅炉房">
             <el-option
               v-for="(item,i) in store.allStands"
               :key="i"
@@ -68,7 +68,7 @@
           <Pading @tabView='tabView' ref='getTotal'/>
         </div>
       </div>
-      <div style="height: 50px;line-height:50px;color: #FFF;pading: 0 0 0 25px;">折线图数据（当前烟囱实时数据）</div>
+      <div style="height: 50px;line-height:50px;color: #aaa;padding: 0 0 0 25px;">折线图数据（当前烟囱实时数据）</div>
       <div id="lin">
         <onlyLine />
       </div>
@@ -193,10 +193,13 @@ export default {
     },
     // 获取表格信息
       tabView(params){
+        if(params == null){
+          params = JSON.parse(sessionStorage.getItem('boiler'))
+        }
         let _this = this;
         let url = doMain.web + RealTimeDataProtocal.list.rest;
         let data = RealTimeDataProtocal.list.request;
-        data.gasSn = params != null?params.gasSn: 0
+        data.gasSn = params.gasSn
         data.page = this.globalStore.pages.page;
         data.rows = this.globalStore.pages.rows;
         axiosHttpPost(this,url,data,function(res){          
@@ -262,11 +265,11 @@ export default {
     changeBackground(){
       $('.el-input__inner').css({
         background: 'transparent',
-        color:'#FFF'
+        color:'#000'
       })
       $('.el-cascader__label').css({
         background: 'transparent',
-        color:'#FFF'
+        color:'#000'
       })
     },
   },
@@ -347,7 +350,7 @@ export default {
       this.store.form.companyChild = [],
       this.store.restaurantsC = []
         this.store.restaurantsR.forEach((item)=> {
-          if(item == newValue){            
+          if(item == newValue){
             this.getCompanyAndBoileroom();
           }
         })
@@ -355,7 +358,6 @@ export default {
     companyChild(newValue,oldValue){
       this.store.form.boileroom = "",
       this.store.restaurantsS = [];
-      console.log(newValue)
       this.store.restaurantsC.forEach(item => {
         switch (newValue.length) {
           case 0:
@@ -421,7 +423,7 @@ export default {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
-  background: #0d111a;
+  background: #eee;
 }
 #search {
   position: absolute;
@@ -429,7 +431,7 @@ export default {
   height: 50px;
   line-height: 50px;
   z-index: 1000;
-  background: #181f29
+  background: #fff
 }
 #search .el-form{
   display: inline-block;

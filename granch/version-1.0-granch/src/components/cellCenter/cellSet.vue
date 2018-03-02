@@ -44,7 +44,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="  ">
-            <el-select v-model="store.form.boiler" disabled clearable filterable placeholder="请选择烟囱">
+            <el-select v-model="store.form.boiler" clearable filterable placeholder="请选择锅炉房">
               <el-option
                 v-for="item in store.allStands"
                 :key="item.unitId"

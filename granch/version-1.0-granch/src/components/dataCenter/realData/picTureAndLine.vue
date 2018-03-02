@@ -2,7 +2,7 @@
   <div id="imageShow">
       <div class="imageShow_top">
         <div class="top_left">
-          <img src="../../../assets/image/realData/pic.png" alt="">
+          <img src="../../../assets/image/realData/realdataImage.png" alt="">
         </div>
         <div class="top_middle">
             <div class="middle_title">
@@ -97,13 +97,13 @@ export default {
   padding: 2% 0 0 15%;
   box-sizing: border-box;
   width: calc(100% - 450px);
-  background: #181f29;
+  background: #FFF;
 }
 #imageShow .middle_title {
   height: 30px;
   line-height: 40px;
   font-size: 18px;
-  color: #d6dfeb;
+  color: black;
 }
 #imageShow .middle {
   height: 40%;
@@ -130,11 +130,11 @@ export default {
 #contData {
   padding-left: 60px;
   font-size: 35px;
-  color: #e85655;
+  color: #43d060;
 }
 #contName {
   font-size: 12px;
-  color: #d6dfeb;
+  color: #868383;
 }
 #imageShow .top_right {
   float: left;

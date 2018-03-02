@@ -136,6 +136,7 @@ export default {
       this.watchNumber();
     },1)
     this.busHaveData();
+    this.tabView();
   },
   computed: {
     name() {

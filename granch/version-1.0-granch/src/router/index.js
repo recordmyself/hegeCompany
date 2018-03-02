@@ -32,6 +32,9 @@ import adminDivision from '@/components/basic/adminDivision/admin.vue'
 import userManage from '@/components/permission/userManage/base.vue'
 import roleManage from '@/components/permission/roleManage/base.vue'
 
+//激活页面
+import Tip from '@/components/base/tip.vue'
+
 
 Vue.use(Router)
 
@@ -45,6 +48,15 @@ export default new Router({
         title: '登录'
       },
       component: logAndReg
+    },
+    // 激活页面
+    {
+      path: '/Tip',
+      name: 'Tip',
+      meta: {
+        title: '激活确认'
+      },
+      component: Tip
     },
   // 公司注册
   {

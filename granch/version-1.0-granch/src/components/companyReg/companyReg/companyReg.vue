@@ -84,10 +84,8 @@ export default {
       this.store.regOk = true;
       let _this = this;
       
-      bus.$on('ok',(res)=>{
-        console.log(res)
-        if(res == '0'){
-          console.log(res)
+      bus.$on('ok',(res1)=>{
+        if(res1 == '0'){
           this.$message.warning('信息不完整！')
           this.store.regOk = false;
         }else{
@@ -97,7 +95,6 @@ export default {
           data = this.store.ruleForm;
           this.$api.post(url,data)
           .then(res=>{
-            console.log('公司注册1',res)
             if(res.data.status == "FAIL"){
               _this.$message.error(res.data.message)
             }else{
@@ -112,10 +109,8 @@ export default {
       bus.$emit('reg')      
     },
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
     },
     // 返回登录页面
     cancel(){
@@ -139,7 +134,6 @@ export default {
       if(push){
         this.store.boiler.push(template);
       };
-      console.log(this.store.boiler)
     },
     reduceTo(){
 
@@ -160,25 +154,25 @@ export default {
         _this.$message.warning('请选择要删除的数据！')
       }
     },
-    
   },
   created(){
     this.store.ruleForm = {
-      name: '',
-      province: '',
-      city: '',
-      contacts: '',
-      mobile: '',
-      code: '',
-      unifiedCode: '',
-      boilers: '',
-      vip:'',
-      fileName: []
-    }
+          name: '',
+          province: '',
+          city: '',
+          mobile: '',
+          contacts: '',
+          email: '',
+          code: '',
+          unifiedCode: '',
+          boilers: '',
+          vip:'',
+          fileName: []
+        }
   },
   mounted(){
-  }
-
+    
+  },
 }
 </script>
 <style scoped>

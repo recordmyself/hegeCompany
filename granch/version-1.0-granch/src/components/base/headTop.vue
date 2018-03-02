@@ -8,10 +8,10 @@
       <!-- 警告图标 -->
       <div id="badgeImg">
         <el-badge :value="globalStore.cellNum" class="item">
-          <i class="fa fa-bell" style="font-size: 25px;color: #FFF;"></i>
+          <i class="fa fa-bell" style="font-size: 25px;color: #000;"></i>
         </el-badge>
       </div>
-      <div style="position:absolute;border: 1px solid #FFF;display:inline-block;height: 20px;margin:0.6% 0 0 0;"></div>
+      <div style="position:absolute;border: 1px solid #aaa;display:inline-block;height: 20px;margin:0.6% 0 0 0;"></div>
       <!-- 用户信息 -->
       <div id="userImg">
         <div class="userImg">
@@ -32,7 +32,10 @@
         </div>
       </div>
       <div id="alterInfo" v-if='globalStore.imageInfo'>
-        <el-dialog title="上传头像" :visible.sync="globalStore.imageInfo" center width="300px">
+        <el-dialog title="上传头像"
+        :close-on-press-escape="false"
+        :close-on-click-modal="false"
+        :visible.sync="globalStore.imageInfo" center width="300px">
           <div id="preview"><img :src="globalStore.src!=''?globalStore.src: src" alt=""></div>
           <div id="defalutImage">
             <!-- <div></div>
@@ -55,7 +58,7 @@
               <img width="100%" :src="globalStore.dialogImageUrl1" alt="">
             </el-dialog>
             <div style="margin: 20px 0 0 0;text-align: center;">
-              <el-button size="small" @click="confirmUpload">确认上传</el-button>
+              <el-button size="small" type='primary' plain @click="confirmUpload" :disabled='errorTo'>确认上传</el-button>
               <el-button size="small" @click="cancel">取消</el-button>
             </div>
 
@@ -63,8 +66,11 @@
         </el-dialog>
       </div>
       <div class="alterInfo" v-if='globalStore.accountInfo'>
-        <el-dialog title="用户信息" :visible.sync="globalStore.accountInfo" center width="500px">
-          <el-form :model="globalStore.account" :rules="psdRules" ref="ruleForm" label-width="70px" class="demo-ruleForm">
+        <el-dialog title="用户信息"
+        :close-on-press-escape="false"
+        :close-on-click-modal="false"
+        :visible.sync="globalStore.accountInfo" center width="500px">
+          <el-form :model="globalStore.account" :rules="emailRules" ref="ruleForm" label-width="70px" class="demo-ruleForm">
             <el-form-item label="账号名">
               <el-input v-model="globalStore.account.account" disabled></el-input>
             </el-form-item>
@@ -74,17 +80,29 @@
             <el-form-item label="所属公司">
               <el-input v-model="globalStore.account.orgName" disabled></el-input>
             </el-form-item>
-            <el-form-item label="邮箱">
-              <el-input v-model="globalStore.account.email" disabled></el-input>
+            <el-form-item label="邮箱" prop='email'>
+              <el-input v-model="globalStore.account.email" :disabled='emailState' style="width:200px;"></el-input>
+              <el-button id="time1" size="small" v-if = '!globalStore.sendTo' type="primary" plain @click="alterEmail">修改</el-button>
+              <el-button id="time2" size="small" v-if = 'globalStore.sendTo' :disabled = 'sendSuccess' type="primary" plain @click="sendEmail">发送验证码</el-button>
+            </el-form-item>
+            <el-form-item label="验证码" v-if='globalStore.sendTo'>
+              <el-input v-model="code"></el-input>
             </el-form-item>
             <el-form-item label="有效期至">
               <el-input v-model="globalStore.account.endTime" disabled></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" size="small" @click='confirmSend'>确认修改</el-button>
+              <el-button type="primary" size="small" @click='cancelSend'>取消</el-button>
             </el-form-item>
           </el-form>
         </el-dialog>
       </div>
       <div class="alterInfo" v-if='globalStore.alertPsd'>
-        <el-dialog title="修改密码" :visible.sync="globalStore.alertPsd" :rules="psdRules" center width="35%">
+        <el-dialog title="修改密码"
+        :close-on-press-escape="false"
+        :close-on-click-modal="false"
+         :visible.sync="globalStore.alertPsd" :rules="psdRules" center width="35%">
           <el-form :model="psdForm" :rules="psdRules" ref="psdForm" label-width="100px" class="demo-ruleForm">
             <el-form-item label="旧密码" prop="oPsd">
               <el-input v-model="psdForm.oPsd" placeholder="请输入旧密码"></el-input>
@@ -112,6 +130,7 @@ import { cookie } from '../../assets/js/cookie'
 import { doMain } from '../../protocal/url'
 import { UserProtocal} from '../../protocal/base/UserProtocal'
 import { FileUploadProtocal } from '../../protocal/base/FileUploadProtocal'
+import { RegisterProtocal } from '../../protocal/base/RegisterProtocal'
 import { axiosHttpPost } from '../../assets/js/axios'
 import { changeDate } from '../../assets/js/changeDate'
 export default {
@@ -129,6 +148,17 @@ export default {
         callback(new Error('请输入有效的手机号'));
       }else{
         callback();
+      }
+    }
+    // 验证邮箱
+    var validateEmail = (rules,value,callback) => {
+      var myEmail = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,5}$/
+      if(!value){
+        callback(new Error('邮箱不能为空'))
+      }else if(!myEmail.test(value)){
+        callback(new Error('输入请输入有效邮箱'))
+      }else{
+        callback()
       }
     }
      //验证密码
@@ -158,8 +188,13 @@ export default {
       src: doMain.base + globalStore.route + globalStore.userInfo.img,
       globalStore,
       errorImg: require('../../assets/image/home/userIcon.png'),
+      emailState: true,
       sendTo1: true,
       sendTel1: false,
+      sendSuccess: false,
+      code: '',
+      content:'修改',
+      errorTo: true,
       infoForm:{
         name: '',
       },
@@ -167,6 +202,11 @@ export default {
         oPsd: '',
         nPsd: '',
         rPsd: '',
+      },
+      emailRules:{
+        email:[
+          {required: true,validator: validateEmail}
+        ]
       },
       psdRules:{
         nPsd:[
@@ -184,7 +224,6 @@ export default {
       let url = doMain.base + UserProtocal.upload.rest;
       let data = UserProtocal.upload.request;
           data.fileName = this.globalStore.uploadImage
-          console.log(data)
       axiosHttpPost(this,url,data,(res)=>{
         if(res.data.statue == "FAIL"){
           _this.$message.error(res.data.message)
@@ -197,10 +236,11 @@ export default {
 
     },
     successTo(res){
-      console.log(res)
       if(res.status == "FAIL"){
         this.$message.error('图片上传失败！')
+        this.errorTo = true;
       }else{
+        this.errorTo = false;
         this.$message.success('图片上传成功！')
         this.globalStore.uploadImage = res.result
         this.globalStore.src = doMain.base + globalStore.route + res.result;
@@ -215,19 +255,20 @@ export default {
     handleError(){
       this.$message.error('上传失败，请重试！')
     },
-    // 图片上传
     accountInfo(formName){
       let _this = this;
       let url = doMain.base + UserProtocal.get.rest;
       let data = UserProtocal.get.request;
       data.id = this.globalStore.userInfo.passportId;
       axiosHttpPost(this,url,data,(res)=>{
-        console.log(res)
         res.data.result[0].endTime = changeDate(res.data.result[0].endTime,false)
         _this.globalStore.account = res.data.result[0];
         _this.globalStore.accountInfo = true
         _this.globalStore.alertPsd = false
         _this.globalStore.imageInfo = false
+
+        this.globalStore.sendTo = false;
+        this.emailState = true;
       })
 
     },
@@ -235,7 +276,79 @@ export default {
       this.globalStore.alertPsd = false
       this.globalStore.imageInfo = true
       this.globalStore.accountInfo = false
+      this.errorTo = true;
     },
+    alterEmail(){
+      this.globalStore.sendTo = true;
+      this.globalStore.account.email = '';
+      this.emailState = false;
+      this.sendSuccess = false;
+    },
+    sendEmail(){
+      if(this.globalStore.account.email == ''){
+        this.$message.warning('请输入邮箱！');
+        return;
+      }
+        this.sendSuccess = true
+        let toTime = 59;
+        let _this = this;
+        this.sendToTime(toTime)
+        let url = doMain.base + UserProtocal.sendEmail.rest;
+        let data = UserProtocal.sendEmail.request;
+        data.email = this.globalStore.account.email
+        axiosHttpPost(this,url,data,(res)=>{
+          if(res.data.status == "FAIL"){
+            _this.$message.success('验证码发送失败');
+          }else{
+            _this.$message.success('验证码已发送至邮箱');
+          }
+        })
+        this.globalStore.time = setInterval(function(){
+          toTime--;
+          if(toTime<1){
+            $('#time2').text('重新获取')
+            clearInterval(_this.globalStore.time)
+            _this.sendSuccess = false;
+          }else{
+            _this.sendToTime(toTime);
+          }
+        },1000)
+      },
+      sendToTime(toTime){
+        $('#time2').text('已发送' + toTime + '秒')
+      },
+      // 确认修改
+      confirmSend(){
+        if(this.code == ''){
+          this.$message.warning('请输入验证码');
+          return;
+        }
+        let _this = this;
+        let url = doMain.base + UserProtocal.refreshEmail.rest;
+        let data = UserProtocal.refreshEmail.request;
+        data.id = this.globalStore.userInfo.passportId
+        data.email = this.globalStore.account.email
+        data.account = this.globalStore.account.account
+        data.code = this.code
+        axiosHttpPost(this,url,data,(res)=>{
+          if(res.data.status == "OK"){            
+            _this.$message.success('修改成功')
+            _this.globalStore.accountInfo = false;
+            _this.emailState = true;
+            _this.sendSuccess = false;
+            _this.globalStore.sendTo = false;
+            clearInterval(_this.globalStore.time);
+            _this.code = ''
+          }else{
+            _this.$message.error(res.data.message)
+          }
+        })
+      },
+      cancelSend(){
+        this.globalStore.accountInfo = false
+        clearInterval(this.globalStore.time);
+
+      },
     alertPsd(){
       this.globalStore.alertPsd = true
       this.globalStore.imageInfo = false
@@ -253,7 +366,6 @@ export default {
       let data = UserProtocal.refreshPassword.request;
       // console.log(this.globalStore.userInfo,hex_md5(this.psdForm.oPsd))
       this.$refs[form].validate((valid)=>{
-        console.log(this.globalStore.userInfo.password==this.psdForm.oPsd)
         if(this.globalStore.userInfo.password != this.psdForm.oPsd){
           this.$message.warning('旧密码不正确，请输入正确的密码！')
           return
@@ -261,7 +373,6 @@ export default {
         data.password = this.psdForm.nPsd;
         data.id = this.globalStore.userInfo.passportId
         axiosHttpPost(this,url,data,(res)=>{
-          console.log(res)
           if(res.data.status == "FAIL"){
             _this.$message.error(res.data.message)
           }else{
@@ -271,17 +382,22 @@ export default {
         });
       })
     },
+    // 重置计时器
+    resetInterval(){
+
+    },
     cancel(){
       this.globalStore.imageInfo = false;
     },
     cancel1(form){
       this.globalStore.alertPsd=false
+      this.psdForm.oPsd = ''
+      this.psdForm.nPsd = ''
+      this.psdForm.rPsd = ''
     }
   },
   created(){
 
-  },
-  computed:{
   },
 };
 </script>
@@ -291,7 +407,7 @@ export default {
   height: 100%;
   line-height: 45px;
   box-sizing: border-box;
-  background: #2a2c3a;
+  background: #ffffff;
   padding-left: 25px;
 }
 #logoImg{
@@ -349,7 +465,7 @@ export default {
   cursor: pointer;
 }
 #user .el-dropdown {
-  color: #FFF;
+  color: #5f9cfd;
 }
 #user .el-dropdown-menu{
   padding: 0 !important;
@@ -374,5 +490,8 @@ export default {
 }
 .headTop .el-button{
   width: 80px;
+}
+#time2,#time1{
+  width: 150px
 }
 </style>

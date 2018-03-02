@@ -35,6 +35,8 @@ export const globalStore = {
   dialogVisible: false,
   // 个人信息
   accountInfo: false,
+  sendTo: false,
+  time: false,
   // 修改密码
   alertPsd: false,
   // 上传图像

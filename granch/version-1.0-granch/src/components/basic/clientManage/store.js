@@ -50,6 +50,17 @@ export const store = {
         ],
         validTime: [
             {  required: true, message: '请选择有效期', trigger:'blur' }
+        ],
+        email: [
+            {  required: true, message: '请选择有效期', trigger:'blur' },
+            { 
+                pattern: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+                message: '邮箱格式不正确',
+                trigger: 'blur'
+            }
+        ],
+        code: [
+            { required: true, message: '请输入验证码', trigger: 'blur' }
         ]
     },
     //所属公司选项
@@ -93,7 +104,8 @@ export const store = {
         startTime:null, //有效期
         endTime:null,  //有效期
         validTime: [],
-        state:null 
+        state:null,
+        email: null //电子邮箱 
     },
     dateOptions: {
         startTime: {
@@ -150,6 +162,7 @@ export const store = {
         "社会信用编码",
         '联系人',
         '电话',
+        '邮箱',
         '客户类型',
         '有效期开始',
         '有效期结束',
@@ -160,11 +173,14 @@ export const store = {
         "creditSn",
         'contacts',
         'phone',
+        'email',
         'customerType',
         'startTime',
         'endTime',
         'stateView'
     ],
+    //存储初始邮箱
+    initEmail: null,
     //按钮信息
     buttonListArr :[],  
     //控制显示

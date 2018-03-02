@@ -49,7 +49,8 @@ export function resetTemp() {
             time: null
         },  //结束日期
         startTime: null,
-        endTime: null
+        endTime: null,
+        code: null
       },
     store.roleIdArr = []
     store.saveOrgidArr = []

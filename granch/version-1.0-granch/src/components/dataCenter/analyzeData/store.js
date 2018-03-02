@@ -5,12 +5,18 @@ export const store = {
     province: '',
     area: '',
     company: '',
+    companyChild:[],
     boileroom: '',
+    boiler:'',
     data: ''
   },
+
+  boileroomId:"",
 
   restaurantsP: [],
   restaurantsR: [],
   restaurantsC: [],
   restaurantsS: [],
+  allStands:[]
+
 }

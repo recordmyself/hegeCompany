@@ -19,13 +19,13 @@
             <el-form-item label="用户名" prop="name">
               <el-input v-model="ruleForm.name" placeholder="请输入用户名"></el-input>
             </el-form-item>
-            <el-form-item label="手机号" prop="tel">
-              <el-input v-model="ruleForm.tel" placeholder="请输入注册手机号"></el-input>
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="ruleForm.email" placeholder="请输入邮箱"></el-input>
             </el-form-item>
-            <!--<el-form-item label="验证码" prop="num"  v-if='false'>
+            <el-form-item label="验证码" prop="num">
               <el-input v-model="ruleForm.num" placeholder="请输入验证码" style="width:150px;margin-left:-40px"></el-input>
-              <el-button id="time" type="info" size="mini" :disabled="sendTo" @click="sendToTel">获取验证码</el-button>
-            </el-form-item>-->
+              <el-button id="time" type="primary" plain size="mini" :disabled="sendTo" @click="sendToTel">获取验证码</el-button>
+            </el-form-item>
             <el-form-item label="新密码" prop="psd">
               <el-input v-model="ruleForm.psd" type="password" placeholder="请输入密码"></el-input>
             </el-form-item>
@@ -49,16 +49,17 @@ import { doMain } from '../../protocal/url'
 import { UserProtocal } from '../../protocal/base/UserProtocal'
 export default {
   data() {
-    var valideTel = (rule,value,callback)=>{
+    var valideEmail = (rule,value,callback)=>{
       if(!value){
-        callback(new Error('手机号不能为空'))
+        callback(new Error('邮箱不能不能为空'))
       };
       //手机正则
-      var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
+      // var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
       // dian
-      var myreg1 = /^(([0\+]\d{2,3-})?(0\d{2,3})-)(\d{7,8})?$/
-      if(!myreg.test(value) && !myreg1.test(value)){
-        callback(new Error('请输入有效的手机号'));
+      // var myreg1 = /^(([0\+]\d{2,3-})?(0\d{2,3})-)(\d{7,8})?$/
+      var myEmail = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,5}$/
+      if(!myEmail.test(value)){
+        callback(new Error('请输入有效的邮箱'));
       }else{
         callback();
       }
@@ -94,17 +95,17 @@ export default {
       time: 0,
       ruleForm: {
         name: '',
-        tel: '',
+        email: '',
         psd: '',
         cPsd: '',
-        // num:''
+        num:''
       },
       rules: {
         name: [{required: true,trigger: 'blur',message: '用户名不能为空'}],
-        tel: [{required: true,trigger: 'blur',validator: valideTel}],
+        email: [{required: true,trigger: 'blur',validator: valideEmail}],
         psd: [{ required: true, trigger: "blur",validator: validatepsd  }],
         cPsd: [{ required: true, trigger: "blur",validator: validaterpsd  }],
-        // num: [{ required: true, trigger: "blur", message: "验证码不能为空" }]
+        num: [{ required: true, trigger: "blur", message: "验证码不能为空" }]
       }
     };
   },
@@ -121,13 +122,12 @@ export default {
       let toTime = 59;
       let _this = this;
       this.sendToTime(toTime)
-      let url = doMain.base + UserProtocal.forgetPassword.rest;
-      let data = UserProtocal.forgetPassword.request;
-          data.mobile = this.ruleForm.tel;
-          data.account = this.ruleForm.name
+      let url = doMain.base + UserProtocal.forgetPasswordSendEmail.rest;
+      let data = UserProtocal.forgetPasswordSendEmail.request;
+          data.email = this.ruleForm.email;
+          data.account = this.ruleForm.name;
       this.$api.post(url,data).then((res)=>{
-        console.log('手机验证码',res)
-        _this.$message.success('验证码已发送');
+        _this.$message.success('验证码已至邮箱');
       })
       _this.time = setInterval(function(){
         toTime--;
@@ -147,16 +147,15 @@ export default {
     // 确认修改
     alter(form){
       let _this = this;
-      let url = doMain.base + UserProtocal.verification.rest;
-      let data = UserProtocal.verification.request;
+      let url = doMain.base + UserProtocal.verificationEmail.rest;
+      let data = UserProtocal.verificationEmail.request;
       data.account = this.ruleForm.name;
-      data.mobile = this.ruleForm.tel;
-	  	// data.num = this.ruleForm.num;
+      data.email = this.ruleForm.email;
+	  	data.keyVal = this.ruleForm.code;
       data.password = this.ruleForm.psd
       this.$refs[form].validate((valid)=>{
         this.$api.post(url,data)
         .then((res)=>{
-          console.log(res);
           if(res.data.status == "FAIL"){
             _this.$message.error(res.data.message)
           }else{
@@ -170,17 +169,14 @@ export default {
   created() {},
   mounted() {},
   computed:{
-    tel(){
-      return this.ruleForm.tel
+    email(){
+      return this.ruleForm.email
     }
   },
   watch: {
-    tel(newValue,oldVaue){
-      //手机正则
-      var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
-      // dian
-      var myreg1 = /^(([0\+]\d{2,3-})?(0\d{2,3})-)(\d{7,8})?$/
-      if(myreg.test(newValue)  || myreg1.test(newValue)){
+    email(newValue,oldVaue){
+      var myEmail = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,5}$/
+      if(myEmail.test(newValue)){
         this.sendTo = false;
       }else{
         this.sendTo = true;
@@ -235,5 +231,8 @@ export default {
 }
 #ButtonArea{
   height: 60px;
+}
+#time{
+  width: 95px
 }
 </style>

@@ -60,6 +60,7 @@ export default {
         }
         data.state = store.status;
       axiosHttpPost(this,url,data,function(res){
+         console.log('注册记录',res)
           _this.store.tableData = res.data.result.list;
           _this.globalStore.pages.totalRows = res.data.result.totalRows;
           _this.globalStore.loading = false;

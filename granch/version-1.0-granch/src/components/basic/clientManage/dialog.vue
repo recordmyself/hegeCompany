@@ -1,7 +1,7 @@
 <template>
     <div class="dialogArea">
         <el-dialog 
-        width="800px" 
+        width="1000px" 
         style="text-align:left;margin-top:-10vh;" 
         :title = "store.form.id?'修改信息':'增加公司'"
         :visible.sync="store.dialogFormVisible"
@@ -30,7 +30,7 @@
                     <!-- <el-input clearable  class="right-common" v-if="!store.form.affiliatedCompany" v-model.trim="store.form.registerName" placeholder="请输入公司名称"></el-input> -->
                 </el-form-item>
                 <el-form-item label="社会信用代码：" prop="unifiedCode">
-                    <el-input :disabled="store.form.id?true:false"  class="right-common" v-model.trim="store.form.unifiedCode" placeholder="请输入社会信用代码"></el-input>
+                    <el-input :maxlength="18" :disabled="store.form.id?true:false"  class="right-common" v-model.trim="store.form.unifiedCode" placeholder="请输入社会信用代码"></el-input>
                 </el-form-item>
                 <el-form-item label="公司类型：" prop="customerType">
                     <el-select  class="right-common" v-model="store.form.customerType" placeholder="请选择公司类型">
@@ -69,8 +69,13 @@
                 
             </el-col>
             <el-col :span="12">
-                 <el-form-item label="主要负责人：" prop="principalPerson">
+                 <!-- <el-form-item label="主要负责人：" prop="principalPerson">
                     <el-input class="right-common"  v-model.trim="store.form.principalPerson" placeholder="请输入主要负责人"></el-input>
+                </el-form-item> -->
+                <el-form-item label="会员类型：" size="small" prop="memberType"  >
+                    <el-select class="right-common"  v-model="store.form.memberType" placeholder="请选择会员类型">
+                        <el-option v-for="item in store.memberTypeOptions" :label="item.label" :value="item.value" :key="item.value"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="联系人：" prop="contacts">
                     <el-input class="right-common"  v-model.trim="store.form.contacts" placeholder="请输入联系人"></el-input>
@@ -81,10 +86,12 @@
                 :rules="[{ pattern: /^1(3|4|5|7|8)\d{9}$/, message: '手机号格式错误',trigger: 'blur', },{required: true, message:'手机号必填',trigger:'blur'}]">      
                     <el-input class="right-common"  v-model.trim="store.form.phone" placeholder="请输入手机号"  auto-complete="off"></el-input>
                 </el-form-item> 
-                <el-form-item label="会员类型：" size="small" prop="memberType"  >
-                    <el-select class="right-common"  v-model="store.form.memberType" placeholder="请选择会员类型">
-                        <el-option v-for="item in store.memberTypeOptions" :label="item.label" :value="item.value" :key="item.value"></el-option>
-                    </el-select>
+                <el-form-item label="电子邮箱：" size="small" prop="email">
+                    <el-input :disabled="banWhileSend" style="vertical-align:middle;"@change="inputChange" class="right-common email-change" v-model.trim="store.form.email" placeholder="请输入用户电子邮箱"></el-input>
+                    <el-button style="width:92px;vertical-align:middle;" type="primary" plain v-if="showBtn" :disabled="banSendAagin" @click="sendIdetifyCode" >{{ buttonText }}</el-button>
+                </el-form-item>
+                <el-form-item v-if="showBtn" label="验证码：" size="small" prop="code">
+                    <el-input  class="right-common" v-model.trim="store.form.code" placeholder="请输入验证码"></el-input>
                 </el-form-item>
                 <el-form-item label="备注：">
                     <el-input :maxlength="50" class="right-common" type="textarea" v-model.trim="store.form.notes"  :rows="4"></el-input>
@@ -154,6 +161,7 @@
     import { doMain } from '../../../protocal/url'
     import { axiosHttpPost, axiosHttpGet } from '../../../assets/js/axios'
     import { CustomerProtocal } from '../../../protocal/base/CustomerProtocal'
+    import { RegisterProtocal } from '../../../protocal/base/RegisterProtocal'
 
     import { resetTemp } from './event.js'
 
@@ -165,6 +173,9 @@
             endTime() {
                 return store.form.endDate.time
             },
+            email() {
+                return store.form.email
+            }
         },
         watch: {
             startTime(newValue, oldValue) {
@@ -177,6 +188,18 @@
                     store.form.endTime = store.form.endDate.time
                 }
             },
+            email(newValue, oldValue) {
+                // console.log('打印邮箱变化');
+                // console.log('旧' + oldValue);
+                // console.log('新' + newValue);
+                if(newValue) {
+                    if(newValue.substring(0,newValue.indexOf('.')) != store.initEmail && store.form.id) {
+                        this.showBtn = true;
+                    }else {
+                        this.showBtn = false;
+                    } 
+                }
+            }
         },
         components: {
             'date-picker': myDatepicker
@@ -186,6 +209,9 @@
                 store,
                 globalStore: globalStore,
                 dialogChooseOrgVisible: false,
+                showBtn: false, //控制显示发送验证码按钮
+                banSendAagin: false, //控制按钮再次发送
+                banWhileSend: false, //控制发送时无法修改邮箱
                 organizationTree: [{
                     id: null,
                     label: '全部公司',
@@ -197,6 +223,9 @@
                 },
                 getName: '',
                 getId: '',
+                buttonText: '发送验证码',
+                interval: null,
+                countDown: null,
             }
         },
         methods: {
@@ -240,9 +269,12 @@
                 }
                 axiosHttpPost(this, url, request,(res) => {
                     console.log(request);
+                    console.log(res);
                     globalStore.buttonLoading = false;
                     store.staff = []
+                    
                     if(res.data.status == 'OK') {
+                    
                         this.$message({ message:'修改成功', type:'success' })
                         this.$refs['dataForm'].resetFields()
                         this.$refs['dataForm'].clearValidate()
@@ -280,6 +312,46 @@
                                     this.$message({ title: '失败', message: res.data.message, type: 'error' })
                                 }
                         })
+            },
+            //记录邮箱信息变化
+            inputChange(val) {
+                // if(val.substring(0,val.indexOf('.')) != store.initEmail && store.form.id) {
+                //     this.showBtn = true;
+                // }else {
+                //     this.showBtn = false;
+                // } 
+            },
+            //发送验证码
+            sendIdetifyCode() {
+                this.banSendAagin = true;
+                this.banWhileSend = true;
+                this.countDown = 60;
+                let url = doMain.base + RegisterProtocal.sendEmail.rest;
+                let request = RegisterProtocal.sendEmail.request;
+                request.email = store.form.email
+                request.type = 'REFRESH'
+                request.userName = store.form.contacts;
+                request.registerName = store.form.name;
+                console.log(request);
+                axiosHttpPost(this, url, request, (res) => {
+                    if(res.data.status == 'OK') {
+                        this.$message.success('验证码已发送至邮箱')
+                    }else {
+                        this.$message.error('验证码发送失败请重试')
+                    }
+                })
+                // console.log(isNaN(time));
+                this.interval = window.setInterval(()=>{
+                    this.countDown--;
+                    // store.countDown--;
+                    this.buttonText = '重新发送(' + this.countDown + ')'
+                    if(this.countDown == 0) {
+                        clearInterval(this.interval)
+                        this.banSendAagin = false;
+                        this.banWhileSend = false;
+                        this.buttonText = '发送验证码'
+                    }
+                },1000)
             },
             chooseOrg() {
                 this.dialogChooseOrgVisible = true;
@@ -332,8 +404,9 @@
                 store.dateOptions.limit[0].from = ''
             },
             getCompany_initDate() {
-                if(this.$refs['dataForm'] != undefined) {
-                    this.$refs['dataForm'].clearValidate(); 
+                if(this.$refs['dataForm'] != undefined && !store.form.id) {
+                    console.log('进来清除了');
+                    this.$refs['dataForm'].resetFields();
                 }
                 // this.$refs['dataForm'].clearValidate();
                 // let url = doMain.base + CustomerProtocal.listTree.rest

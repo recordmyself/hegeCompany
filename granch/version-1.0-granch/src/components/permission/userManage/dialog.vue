@@ -1,7 +1,7 @@
 <template>
     <div class="dialogArea">
         <el-dialog
-        width="800px"
+        width="900px"
         :title = "store.form.id?'修改信息':'新增用户'"
         @open="getOrganization"
         :visible.sync="store.dialogFormVisible"
@@ -9,7 +9,7 @@
         :close-on-click-modal="false"
         :show-close="false"
         style="text-align:left;">
-            <el-form status-icon :model="store.form" :rules="store.rules" ref="dataForm" label-width="120px" label-position="right" class="clearfix" style="height:300px;">
+            <el-form status-icon :model="store.form" :rules="store.rules" ref="dataForm" label-width="120px" label-position="right" class="clearfix" >
                 <el-col :span="12" class="clearfix">
                     <el-form-item label="中文名称：" size="small"  prop="userName">
                         <el-input  class="item-control" v-model.trim="store.form.userName" placeholder="请输入用户中文名称"></el-input>
@@ -39,10 +39,15 @@
                             @change="orgSelect"
                             v-model="store.saveOrgidArr"
                         ></el-cascader> -->
-                        <el-input class="item-control"  disabled v-model="store.form.orgName" placeholder="请选择所属机构"
+                        <el-input style="vertical-align:middle;" class="item-control"  disabled v-model="store.form.orgName" placeholder="请选择所属机构"
                                 readonly="readonly">
                         </el-input>
-                            <el-button size="small" type="primary" @click="chooseOrg">选择</el-button>
+                            <el-button style="vertical-align:middle;" size="small" type="primary" plain @click="chooseOrg">选择</el-button>
+                    </el-form-item>
+                    <el-form-item v-if="store.form.companyId" label="会员类型：" size="small" prop="memberType"  >
+                        <el-select class="item-control"  v-model="store.form.memberType" :disabled="true" placeholder="请选择">
+                             <el-option v-for="item in store.memberTypeOptions" :label="item.label" :value="item.value" :key="item.value"></el-option>
+                        </el-select>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -55,15 +60,7 @@
                         { required: true, message: '联系电话不能为空', trigger: 'blur'}
                     ]">
                         <el-input class="item-control"  v-model.trim.number="store.form.mobile" placeholder="请输入用户联系电话"></el-input >
-                    </el-form-item>
-                    <el-form-item label="电子邮箱：" size="small" prop="email">
-                        <el-input class="item-control" v-model.trim="store.form.email" placeholder="请输入用户电子邮箱"></el-input>
-                    </el-form-item>
-                    <el-form-item label="会员类型：" size="small" prop="memberType"  >
-                        <el-select class="item-control"  v-model="store.form.memberType" :disabled="true" placeholder="请选择">
-                             <el-option v-for="item in store.memberTypeOptions" :label="item.label" :value="item.value" :key="item.value"></el-option>
-                        </el-select>
-                    </el-form-item>
+                    </el-form-item>       
                       <el-form-item label="用户角色： " size="small" prop="roleIdList"  >
                         <!-- <el-select class="item-control"  v-model="store.form.roleName" placeholder="请选择">
                              <el-option v-for="item in store.roleNameOptions" :label="item.label" :value="item.value" :key="item.value"></el-option>
@@ -73,7 +70,13 @@
                             <el-option v-for="item in store.roleNameOptions" :label="item.label" :value="item.id" :key="item.id"></el-option>
                          </el-select>
                     </el-form-item>
-
+                    <el-form-item label="电子邮箱：" size="small" prop="email">
+                        <el-input :disabled="banWhileSend" style="vertical-align:middle;"@change="inputChange" class="item-control email-change" v-model.trim="store.form.email" placeholder="请输入用户电子邮箱"></el-input>
+                        <el-button style="width:92px;vertical-align:middle;" type="primary" plain v-if="showBtn" :disabled="banSendAagin" @click="sendIdetifyCode" >{{ buttonText }}</el-button>
+                    </el-form-item>
+                    <el-form-item v-if="showBtn" label="验证码：" size="small" prop="code">
+                        <el-input  class="item-control" v-model.trim="store.form.code" placeholder="请输入验证码"></el-input>
+                    </el-form-item>
                     <el-form-item label="员工列表：" size="small"   auto-complete="off" >
                         <div   class="item-control control-loading" style="height:150px; overflow:auto;border:1px solid #d8dce5;border-radius:4px;">
                             <el-tree :data="store.staff" v-loading="store.treeLoading" :style="store.treeLoading?'height:200px;':''"></el-tree>
@@ -149,8 +152,11 @@
             endTime() {
                 return store.form.endDate.time
             },
+            email() {
+                return store.form.email
+            }
             // roleIdList() {
-            //     return store.roleIdArr[store.roleIdArr.length-1]
+            //     return store.roleI  dArr[store.roleIdArr.length-1]
             // }
         },
         watch: {
@@ -170,6 +176,18 @@
                     store.form.endTime = store.form.endDate.time
                 }
             },
+            email(newValue, oldValue) {
+                // console.log('打印邮箱变化');
+                // console.log('旧' + oldValue);
+                // console.log('新' + newValue);
+                if(newValue) {
+                    if(newValue.substring(0,newValue.indexOf('.')) != store.initEmail && store.form.id) {
+                        this.showBtn = true;
+                    }else {
+                        this.showBtn = false;
+                    }
+                }
+            }
         },
         components: {
             'date-picker': myDatepicker
@@ -179,6 +197,9 @@
                 store,
                 globalStore,
                 dialogChooseOrgVisible: false,
+                showBtn: false,
+                banSendAagin: false,
+                banWhileSend: false,
                 organizationTree: [{
                     id: null,
                     label: '全部组织机构',
@@ -194,7 +215,10 @@
                 },
                 getName: '',
                 getId: '',
-                getLevel: null
+                getLevel: null,
+                buttonText: '发送验证码',
+                interval: null,
+                countDown: null,
             }
         },
         methods: {
@@ -230,9 +254,16 @@
                         let request = UserProtocal.refresh.request
                         let url = doMain.base + UserProtocal.refresh.rest
                         request = store.form
+                        if(new Date(request.startTime).getTime() != store.initStartTime) {
+                            request.startTime = new Date(request.startTime).getTime() - 8 * 3600 * 1000
+                        }
+                        if(new Date(request.endTime).getTime() != store.initEndTime) {
+                            request.endTime = new Date(request.endTime).getTime() + 24*60*60*1000 - (8 * 3600 * 1000) - 1000
+                        }
                         axiosHttpPost(this, url, request,(res) => {
                             console.log('修改请求');
                             console.log(request);
+                            console.log(res)
                             globalStore.buttonLoading = false;
                             store.staff = []
                             if(res.data.status == 'OK') {
@@ -242,7 +273,7 @@
                                 store.dialogFormVisible = false
                                 this.$emit('tabView')
                             }else{
-                                this.$message({ message:'修改失败', type:'error' })
+                                this.$message({ message: res.data.message, type:'error' })
                             }
                         })
             },
@@ -251,10 +282,10 @@
                 let request = UserProtocal.create.request
                 // console.log(store.form.roleIdList);
                 request = store.form
-                request.startTime = new Date(request.startTime).getTime()
-                request.endTime = new Date(request.endTime).getTime()
+                request.startTime = new Date(request.startTime).getTime() - 8 * 3600 * 1000
+                request.endTime = new Date(request.endTime).getTime() + 24*60*60*1000 - (8 * 3600 * 1000 + 1000)
                 // request.orgId =val[val.length-1]
-                console.log('创建请仇');
+                console.log('创建请求');
                 console.log(request);
                 axiosHttpPost(this, doMain.base + UserProtocal.create.rest, request, (res) => {
                                 console.log(res);
@@ -273,10 +304,25 @@
                         })
             },
             getOrganization() {
-                //清楚未清楚的表单验证
-                if(this.$refs['dataForm'] != undefined) {
-                    this.$refs['dataForm'].clearValidate();
+                if(this.$refs['dataForm'] != undefined && !store.form.id) {
+                    console.log('进来清除了');
+                    this.$refs['dataForm'].resetFields();
                 }
+                //存储邮箱输入框初始的值
+                if(store.form.email) {
+                    store.initEmail = store.form.email.substring(0,store.form.email.indexOf('.'))
+                }                
+                this.showBtn = false;
+                
+                //清除上次计时器
+                if(this.interval) {
+                    this.buttonText = '发送验证码'
+                    this.countDown = null;
+                    this.banSendAagin = false;
+                    clearInterval(this.interval)
+                }
+                //清楚未清楚的表单验证
+                
                 //清空全部组织以及全部客户的上一次数据
                 this.organizationTree[0].children = []
                 this.organizationTree[1].children = []
@@ -342,7 +388,46 @@
                 this.getId = null;
                  //初始化日期限制
                 store.dateOptions.limit[0].from = ''
-                store.dateOptions.limit[0].to = '' 
+                store.dateOptions.limit[0].to = ''
+
+                
+            },
+            //记录邮箱信息变化
+            inputChange(val) {
+                // if(val.substring(0,val.indexOf('.')) != store.initEmail && store.form.id) {
+                //     this.showBtn = true;
+                // }else {
+                //     this.showBtn = false;
+                // } 
+            },
+            //发送验证码
+            sendIdetifyCode() {
+                this.banSendAagin = true;
+                this.banWhileSend = true;
+                this.countDown = 60;
+                let url = doMain.base + UserProtocal.sendEmail.rest;
+                let request = UserProtocal.sendEmail.request;
+                request.email = store.form.email
+                console.log(request);
+                axiosHttpPost(this, url, request, (res) => {
+                    if(res.data.status == 'OK') {
+                        this.$message.success('验证码已发送至邮箱')
+                    }else {
+                        this.$message.error('验证码发送失败请重试')
+                    }
+                })
+                // console.log(isNaN(time));
+                this.interval = window.setInterval(()=>{
+                    this.countDown--;
+                    // store.countDown--;
+                    this.buttonText = '重新发送(' + this.countDown + ')' 
+                    if(this.countDown == 0) {
+                        clearInterval(this.interval)
+                        this.banSendAagin = false;
+                        this.banWhileSend = false;
+                        this.buttonText = '发送验证码'
+                    }
+                },1000)
             },
             chooseOrg() {
                 let _this = this;
@@ -393,17 +478,20 @@
                     //如果为0 则组织树用的organziaitonTree 其中id是companyId 直接赋值
                     store.form.companyId = this.getId  
                     //使用companyId查询该公司的会员类型
-                    let getType_OrganizationUrl = doMain.base + OrganizationProtocal.get.rest
-                    let getType_OrganizationRequest = OrganizationProtocal.get.request
-                    getType_OrganizationRequest.id = store.form.companyId
-                    axiosHttpPost(this, getType_OrganizationUrl, getType_OrganizationRequest, (res) => {
-                        console.log('查到membertype');
-                        console.log(res);
-                        if(res.status == 200) {
-                            //获取会员类型
-                            store.form.memberType = res.data.result.memberType
-                        }
-                    })
+                    
+                    if(store.form.companyId) {
+                        let getType_OrganizationUrl = doMain.base + OrganizationProtocal.get.rest
+                        let getType_OrganizationRequest = OrganizationProtocal.get.request
+                        getType_OrganizationRequest.id = store.form.companyId
+                        axiosHttpPost(this, getType_OrganizationUrl, getType_OrganizationRequest, (res) => {
+                            console.log('查到membertype');
+                            console.log(res);
+                            if(res.status == 200) {
+                                //获取会员类型
+                                store.form.memberType = res.data.result.memberType
+                            }
+                        })
+                    }
                     let url2 = doMain.base + UserProtocal.listUser.rest
                     let request2 = UserProtocal.listUser.request
                     request2.companyId = store.form.companyId

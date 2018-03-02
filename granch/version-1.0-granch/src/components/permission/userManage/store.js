@@ -45,7 +45,8 @@ export const store = {
             time: null
         },  //结束日期
         startTime: null,
-        endTime: null
+        endTime: null,
+        code: null //验证码
     },
     memberTypeOptions: [
         { label: '免费', value: 1 },
@@ -170,6 +171,9 @@ export const store = {
         ],
         roleIdList: [
             { required: true, message: '请选择用户角色', trigger: 'blur' }
+        ],
+        code: [
+            { required: true, message: '请输入验证码', trigger: 'blur' }
         ]
     },
     title: '用户信息',
@@ -203,12 +207,16 @@ export const store = {
         "memo"
     ],
     filename: '用户管理表格',
-    
+    //存储初始邮箱
+    initEmail: null,
+    initStartTime: null,
+    initEndTime: null,
     //存储按钮信息
     buttonListArr :[],    
     //控制显示
     treeLoading:false,
     listLoading: false,
-    dialogFormVisible: false
+    dialogFormVisible: false,
+    
 }
 

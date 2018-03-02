@@ -1,4 +1,74 @@
 export const UserProtocal = {
+	// 用户修改邮箱
+	//修改
+		refreshEmail : {
+			rest: "/user/refreshEmail",
+			request: {
+				id:null, 
+				account: null,               
+                email:null , //邮箱               
+                code:null//验证码
+		    },
+		    response:{
+		    	status:"OK",
+		    	result: true | false
+		    }
+		},
+		//个人信息中修改邮箱时获取验证码
+		sendEmail : {
+			rest: "/user/sendEmail",
+		    request: {
+		        passportId: null,
+		        token: null,
+		        email:null//邮箱
+		    },
+		    response:{
+		    	status:"OK",
+		    	result: true | false
+		    }
+		},
+		//激活链接
+		validation:{
+			rest: "/user/validation",
+			request: {
+				id:null,
+				key:null
+			},
+			response:{
+				status:"OK",
+				result: true | false 
+			}
+		},
+		//忘记密码发送邮件
+		forgetPasswordSendEmail : {
+			rest: "/user/forgetPasswordSendEmail",
+		    request: {
+		        passportId: null,
+		        token: null,
+		        account:null,//账号
+		        email:null//邮箱
+		    },
+		    response:{
+		    	status:"OK",
+		    	result: true | false
+		    }
+		},
+		//得到验证邮件修改密码
+		verificationEmail : {
+			rest: "/user/verificationEmail",
+		    request: {
+		        passportId: null,
+		        token: null,
+		        account:null,//账号
+		        email:null,//邮箱
+		        keyVal:0,//验证码
+	        	password:null//新密码
+		    },
+		    response:{
+		    	status:"OK",
+		    	result: true | false
+		    }
+		},
 		//上传头像后修改信息
 		upload : {
 			rest: "/user/upload",
@@ -156,7 +226,8 @@ export const UserProtocal = {
                 startTime:null,//有效开始时间
                 endTime:null,//有效结束时间
                 memberType:null, //会员类型1.免费 2.付费
-                roleName:null//角色名
+                roleName:null,//角色名
+                code:null//验证码
 		    },
 		    response:{
 		    	status:"OK",
